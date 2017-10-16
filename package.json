@@ -1,0 +1,15 @@
+{
+  "name": "retropie-sleeper",
+  "version": "1.0.0",
+  "description": "utility to turn off retropi monitor with inactivity",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo 'coming soon'"
+  },
+  "author": "cp@cjparker.us",
+  "license": "MIT",
+  "dependencies": {
+    "keypress": "^0.2.1",
+    "underscore": "^1.8.3"
+  }
+}
