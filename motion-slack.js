@@ -7,6 +7,7 @@ const slack = require("slack-notify")(SLACK_WEBHOOK_URL);
 let slackAlertArmed = true;
 
 const motionPin = process.env.MOTION_PIN || 14;
+console.log(`motion pin is ${motionPin}`)
 const slackMessage = process.env.SLACK_MESSAGE || `motion detected`;
 
 gpio.setMode(gpio.MODE_BCM);
@@ -29,13 +30,15 @@ setTimeout(() => {
   console.log(`waiting for change on pin ${motionPin}`)
 
   gpio.on("change", function(channel, value) {
-    console.log(`motion state changed, value ${value}`);
+    console.log(`motion state changed, channel ${channel}, value ${value}`);
     if (value) {
       lastMotionTimestamp = new Date().getTime();
       if (slackAlertArmed) {
         slack.alert({ text: slackMessage, fields: {} });
       }
       slackAlertArmed = false;
+    } else {
+        console.log(`motion state changed, but value was ${value}, channel ${channel}`)
     }
   });
 
@@ -44,8 +47,10 @@ setTimeout(() => {
       (new Date().getTime() - lastMotionTimestamp) / 1000;
     console.log(`${secondsSinceLastMotion} seconds since last motion`);
     if (secondsSinceLastMotion >= inactivityTimeout) {
-      console.log('re-arming')
-      slackAlertArmed = true;
+      if (!slackAlertArmed) {
+	      console.log('re-arming')
+	      slackAlertArmed = true;
+      }
     }
   }, pollIntervalSec * 1000);
-}, 60 * 1000);
+}, 3 * 1000);
