@@ -24,7 +24,10 @@ const pollIntervalSec = process.env.POLL_INTERVAL_SEC || `${30}`;
 
 // delay 60s to give some time for the network to startup
 
+console.log('will start in 60 seconds')
 setTimeout(() => {
+  console.log(`waiting for change on pin ${motionPin}`)
+
   gpio.on("change", function(channel, value) {
     console.log(`motion state changed, value ${value}`);
     if (value) {
@@ -41,6 +44,7 @@ setTimeout(() => {
       (new Date().getTime() - lastMotionTimestamp) / 1000;
     console.log(`${secondsSinceLastMotion} seconds since last motion`);
     if (secondsSinceLastMotion >= inactivityTimeout) {
+      console.log('re-arming')
       slackAlertArmed = true;
     }
   }, pollIntervalSec * 1000);
